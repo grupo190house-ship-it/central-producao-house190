@@ -1,0 +1,34 @@
+name: Importar projeto inicial
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - project.bundle.b64
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restaurar projeto do bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode project.bundle.b64 > /tmp/central-producao.bundle
+          git clone /tmp/central-producao.bundle /tmp/central-producao
+          rsync -a --delete --exclude='.git' --exclude='project.bundle.b64' --exclude='.github/workflows/import-project.yml' /tmp/central-producao/ ./
+          rm -f project.bundle.b64 .github/workflows/import-project.yml
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Importa base completa da central de produção"
+          git push origin HEAD:main
