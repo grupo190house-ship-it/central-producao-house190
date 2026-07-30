@@ -1,0 +1,11 @@
+{
+  "name": "Central de Produção House190",
+  "short_name": "Produção H190",
+  "description": "Produção, validade, etiquetas e estoque.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f4f0",
+  "theme_color": "#111111",
+  "lang": "pt-BR",
+  "icons": []
+}

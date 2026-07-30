@@ -1,32 +1,32 @@
 # Central de Produção House190
 
-Sistema web para controle da central de produção da House190, com foco em produção, etiquetas de validade, lotes, estoque, clientes, perdas e rastreabilidade.
+Sistema web responsivo para organizar a produção da central, gerar etiquetas de validade, controlar lotes, clientes, estoque, perdas e rastreabilidade.
 
-## Escopo inicial
+## Módulos incluídos nesta base
 
 - Painel operacional do dia
+- Ordens de produção e acompanhamento de status
 - Cadastro de produtos e validade padrão
-- Ordens de produção
-- Geração de lote e etiquetas
-- Impressão de etiquetas 60 x 40 mm
-- Cadastro de clientes e unidades
-- Estoque por lote e PVPS
-- Alertas de vencimento
+- Gerador de etiqueta 60 × 40 mm com impressão
+- Clientes e unidades atendidas
+- Estoque por lote com lógica PVPS
 - Registro de perdas
-- Rastreabilidade e auditoria
+- API de saúde e API inicial para cálculo de etiqueta
+- Modelo PostgreSQL completo com auditoria
+- Layout responsivo e instalável como aplicativo web
 
 ## Tecnologias
 
-- Next.js
-- React
-- TypeScript
+- Next.js com App Router
+- React e TypeScript
+- CSS responsivo sem biblioteca visual externa
 - PostgreSQL
 - Prisma ORM
-- Docker Compose
+- Docker Compose para banco local
 
-## Executar localmente
+## Como executar
 
-1. Copie o arquivo de ambiente:
+1. Copie as variáveis de ambiente:
 
 ```bash
 cp .env.example .env
@@ -44,11 +44,11 @@ docker compose up -d
 npm install
 ```
 
-4. Gere o Prisma Client e prepare o banco:
+4. Gere o cliente do banco e aplique a primeira migração:
 
 ```bash
 npm run db:generate
-npm run db:push
+npm run db:migrate -- --name initial
 npm run db:seed
 ```
 
@@ -60,38 +60,25 @@ npm run dev
 
 Acesse `http://localhost:3000`.
 
+## Impressão de etiquetas
+
+A tela **Etiquetas** possui um modelo 60 × 40 mm. Ao clicar em imprimir, o CSS de impressão remove o restante da interface e envia somente a etiqueta para o navegador. Para impressoras térmicas, configure o papel como 60 × 40 mm e margens como zero.
+
 ## Estrutura principal
 
 ```text
-src/app            Telas e rotas do sistema
-src/components     Componentes reutilizáveis
-src/lib            Dados iniciais e utilitários
-prisma              Banco de dados, modelos e seed
-docs                Arquitetura e roadmap
+src/app/                 páginas e APIs
+src/components/          componentes da interface
+src/lib/                 dados demonstrativos e acesso ao banco
+prisma/schema.prisma     modelo relacional
+prisma/seed.ts           dados iniciais
+docs/                    arquitetura, escopo e próximos passos
 ```
 
-## Módulos
+## Estado atual
 
-### Produção
+A interface usa dados demonstrativos para permitir validação visual imediata. O banco e as APIs já possuem a estrutura necessária para substituir os dados demonstrativos por consultas reais na próxima etapa.
 
-Criação e acompanhamento de ordens por produto, quantidade, responsável, cliente e prazo.
+## Segurança
 
-### Etiquetas
-
-Cálculo automático da validade, geração de lote e impressão no formato térmico 60 x 40 mm.
-
-### Estoque
-
-Controle por lote, quantidade, vencimento, localização e sistema PVPS.
-
-### Clientes
-
-Cadastro das unidades e clientes atendidos pela central, incluindo calendário de entrega e histórico.
-
-### Perdas
-
-Registro de produto, lote, quantidade, motivo, responsável e observações.
-
-## Próximas etapas
-
-Consulte [docs/ROADMAP.md](docs/ROADMAP.md) para as próximas fases do desenvolvimento.
+Antes de colocar em produção, implemente autenticação, políticas de permissão, hash de senha, backup automático, armazenamento protegido de imagens e HTTPS. O modelo de dados já prevê funções de usuário e auditoria.

@@ -1,0 +1,41 @@
+{
+  "name": "central-producao-house190",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sistema web para produção, etiquetas de validade, estoque, clientes e rastreabilidade da Central de Produção House190.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "7.9.1",
+    "@prisma/client": "7.9.1",
+    "dotenv": "^17.2.0",
+    "next": "16.2.12",
+    "pg": "^8.16.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/pg": "^8.15.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "16.2.12",
+    "prisma": "7.9.1",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
