@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - project.bundle.b64
+      - project.bundle.part05
 
 permissions:
   contents: write
@@ -22,10 +22,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base64 --decode project.bundle.b64 > /tmp/central-producao.bundle
+          cat project.bundle.part* > /tmp/central-producao.b64
+          base64 --decode /tmp/central-producao.b64 > /tmp/central-producao.bundle
           git clone /tmp/central-producao.bundle /tmp/central-producao
-          rsync -a --delete --exclude='.git' --exclude='project.bundle.b64' --exclude='.github/workflows/import-project.yml' /tmp/central-producao/ ./
-          rm -f project.bundle.b64 .github/workflows/import-project.yml
+          rsync -a --delete --exclude='.git' --exclude='project.bundle*' --exclude='.github/workflows/import-project.yml' /tmp/central-producao/ ./
+          rm -f project.bundle.b64 project.bundle.part* .github/workflows/import-project.yml
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
