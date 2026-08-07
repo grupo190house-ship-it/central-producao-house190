@@ -1,0 +1,100 @@
+{
+  "theme": "light",
+  "archetype": "Swiss & High-Contrast (Authority, Clarity, Truth)",
+  "typography": {
+    "primary_font": "IBM Plex Sans",
+    "primary_font_css": "'IBM Plex Sans', sans-serif",
+    "secondary_font": "Barlow",
+    "secondary_font_css": "'Barlow', sans-serif",
+    "mono_font": "IBM Plex Mono",
+    "mono_font_css": "'IBM Plex Mono', monospace",
+    "heading_strategy": "Industrial and highly legible. Use Barlow for high-impact labels. Web UI uses IBM Plex Sans.",
+    "web_ui_scale": {
+      "h1": "text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900",
+      "h2": "text-lg sm:text-xl font-semibold text-zinc-800",
+      "body": "text-sm text-zinc-600",
+      "label": "text-xs font-bold uppercase tracking-[0.1em] text-zinc-500"
+    },
+    "thermal_print_scale": {
+      "header": "text-[12px] font-bold uppercase leading-none text-black",
+      "product_name": "text-[24px] font-black uppercase leading-tight text-black",
+      "primary_date": "text-[18px] font-bold text-black",
+      "secondary_text": "text-[14px] font-bold text-black"
+    }
+  },
+  "colors": {
+    "background": "#F4F4F5",
+    "surface": "#FFFFFF",
+    "border": "#E4E4E7",
+    "primary": "#000000",
+    "primary_hover": "#27272A",
+    "text_main": "#09090B",
+    "text_muted": "#71717A",
+    "accent_danger": "#DC2626",
+    "print_black": "#000000",
+    "print_white": "#FFFFFF"
+  },
+  "visual_enhancers": {
+    "shadows": "Minimalist. Use sharp, small shadows for interactive elements. shadow-sm on cards.",
+    "borders": "1px solid #E4E4E7 for UI. For print, use strict 2px solid #000000 borders.",
+    "radii": "Subtle roundness for UI: rounded-md (6px). For print, NO border radius (0px) to prevent thermal bleeding on corners.",
+    "textures": "None. Clean, sterile, industrial."
+  },
+  "grids_and_layouts": {
+    "page_layout": "Split-pane Command Dashboard. Left pane (60%) for Forms and Queue table. Right pane (40%) for Sticky Live Preview.",
+    "form_grid": "Bento High Density Mode. 2-column grid (grid-cols-2) with gap-4 for dense data entry.",
+    "print_layout": "Flexbox/Grid hybrid. Top bar flex-between. Main product centered. 2-column grid for dates. Stacked flex for minor details."
+  },
+  "print_specific_rules": {
+    "thermal_fixes": [
+      "No grayscale, opacity, or rgba colors. Use only pure #000000 and #FFFFFF.",
+      "Disable anti-aliasing in @media print: -webkit-font-smoothing: none; font-smoothing: never;",
+      "Use extremely bold font weights (700, 800, 900) for all text to prevent thermal fading.",
+      "Ensure all borders are at least 2px thick.",
+      "Remove all box-shadows and border-radius in print."
+    ],
+    "label_dimensions": {
+      "width": "80mm",
+      "heights": ["40mm", "50mm", "60mm"]
+    },
+    "layout_hierarchy": {
+      "top": "HOUSE190 / Central de Produção (left) | Peso (right)",
+      "middle": "Product Name (Massive, Barlow Black font)",
+      "dates": "PRODUÇÃO and VALIDADE side-by-side. VALIDADE is inverted (white text on black background) or heavily boxed.",
+      "details": "LOTE (Mono font), CONSERVAÇÃO, DESTINO, RESPONSÁVEL. Stacked tightly.",
+      "footer": "ALÉRGICOS. Inverted banner at the bottom."
+    }
+  },
+  "components": [
+    {
+      "name": "LivePreviewCard",
+      "description": "A sticky container on the right side of the screen that strictly renders the HTML/CSS exactly as it will print, simulating the 80mm paper size using aspect ratios.",
+      "instructions_to_main_agent": "Wrap this in a div that represents the physical paper. Use aspect-ratio and exact mm mapping in CSS or scaled down px values. Ensure background is pure white."
+    },
+    {
+      "name": "LabelForm",
+      "description": "Data entry form utilizing Shadcn Select and Input components for selecting product, destination, responsible, and quantity.",
+      "instructions_to_main_agent": "Use dense spacing. Labels should be uppercase, tracking-wide. Add a 'Tamanho da Etiqueta' selector (80x40, 80x50, 80x60)."
+    },
+    {
+      "name": "PrintQueueTable",
+      "description": "A dense data table showing the current batch of labels waiting to be printed.",
+      "instructions_to_main_agent": "Use Shadcn Table. Include columns for Product, Qty, Destino, and an action column to remove items."
+    }
+  ],
+  "accessibility": {
+    "contrast": "APCA high contrast compliant. Black on white for everything critical.",
+    "focus": "focus:ring-2 focus:ring-black focus:ring-offset-2",
+    "testing_attributes": "Add data-testid to all form inputs, buttons (e.g., data-testid='add-to-queue-button', data-testid='print-batch-button')."
+  },
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Use 'IBM Plex Sans' for the web interface and 'Barlow' / 'IBM Plex Mono' for the printed label.",
+    "Create a dedicated print stylesheet or use Tailwind's print modifier (print:hidden, print:block, etc).",
+    "The label DOM elements must use pure inline styles or strict Tailwind utility classes that enforce pure black and white (e.g., text-black, bg-white).",
+    "Implement the live preview by scaling down the exact DOM node that will be printed, or keeping it 1:1 if it fits on screen.",
+    "Do NOT use transparent backgrounds in dropdowns.",
+    "Never use generic centered layouts for the app; use a strict grid structure.",
+    "Install and use 'lucide-react' for dashboard icons (e.g., printer, plus, trash, settings)."
+  ],
+  "image_urls": {}
+}
