@@ -1,0 +1,22 @@
+{
+  "summary": "Retest of AUTO-FIT fix in ThermalLabel.jsx after E1 changed the final pass to measure scrollHeight at the exact width that stays applied and derive s = OH/scrollHeight without altering width afterwards. All 6 combinations (3 sizes x 2 products) now PASS the no-clip + fill>=96% criteria. VALIDADE and ALÉRGICOS styles remain correct. Print-current and print-batch (2+3=5 pages) also verified with scale transform applied.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "ThermalLabel.jsx auto-fit is now correct: final pass measures scrollHeight at applied width and sets scale = OH/scrollHeight, guaranteeing height*scale == OH. Consider clamping s within a small epsilon of 1 if desired to avoid over-scaling small content, but functionally not needed."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "6/6 auto-fit combos PASS (100%); VALIDADE/ALÉRGICOS/PRINT-CURRENT/PRINT-BATCH all PASS (100%)"},
+  "test_credentials": "N/A (no login)",
+  "seed_data_creation": "None (used existing seed products)",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Auto-fit measurements per combo (outerH / innerH / fill / clip_px / applied scale): Molho 80x40: 151.17/151.27/1.0007/+0.10px/0.825; Molho 80x50: 188.97/188.94/0.9999/-0.03px/0.936; Molho 80x60: 226.77/226.93/1.0007/+0.16px/1.124; Brioche 80x40: 151.17/150.97/0.9986/-0.21px/0.709; Brioche 80x50: 188.97/188.96/0.9999/-0.01px/0.887; Brioche 80x60: 226.77/226.57/0.9991/-0.19px/0.978. All within +/-2px clip tolerance and >=96% fill. VALIDADE: color rgb(0,0,0), bg rgb(255,255,255), border-top 2px black; ALÉRGICOS: color rgb(0,0,0), transparent bg (inherits white from .thermal-label), border-top 2px black. Print-current with qty=1 => #print-root .label-page count=1 with matrix scale != none. Print-batch with 2 Molho + 3 Brioche in queue => count=5 with scale applied.",
+  "rca of the issue": "Previous bug (iteration 4) was that the final pass recomputed s = OH/scrollHeight but then altered width to OW/s, which triggered a re-wrap and changed scrollHeight while the just-computed s remained applied — producing scale > 1 with overflow. Fix (iteration 5): measure scrollHeight at the width that will REMAIN applied and derive s from that height without further width mutation, ensuring height*scale == OH exactly. Verified: no clip and fill>=99% across all 6 combos."
+}

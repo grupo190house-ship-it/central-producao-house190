@@ -18,23 +18,29 @@ export const ThermalLabel = ({ data, size, testId }) => {
     content.style.transform = "none";
     content.style.width = OW + "px";
 
-    // Iterate: width and wrapping are coupled, so converge on the scale that
-    // makes the (reflowed) content fill the label height exactly.
-    let s = 1;
+    // Width and line-wrapping are coupled, so converge on the scale that makes
+    // the (reflowed) content fill the label height.
+    let natH = content.scrollHeight;
+    let s = natH ? OH / natH : 1;
     for (let i = 0; i < 6; i++) {
-      const natH = content.scrollHeight;
+      content.style.width = OW / s + "px";
+      natH = content.scrollHeight;
       if (!natH) break;
-      s = OH / natH;
-      if (!isFinite(s) || s <= 0) {
-        s = 1;
+      const sNew = OH / natH;
+      if (Math.abs(sNew - s) < 0.003) {
+        s = sNew;
         break;
       }
-      content.style.width = OW / s + "px";
+      s = sNew;
     }
-    const finalH = content.scrollHeight;
-    s = finalH ? OH / finalH : 1;
-    if (!isFinite(s) || s <= 0) s = 1;
+
+    // Final consistent pass: measure at the exact width that stays applied and
+    // derive the scale from THAT height, without changing the width afterwards.
+    // This guarantees height*scale == OH exactly (fills, never clips).
     content.style.width = OW / s + "px";
+    natH = content.scrollHeight;
+    s = natH ? OH / natH : 1;
+    if (!isFinite(s) || s <= 0) s = 1;
     content.style.transform = `scale(${s})`;
   }, [JSON.stringify(data), size.w, size.h]);
 
