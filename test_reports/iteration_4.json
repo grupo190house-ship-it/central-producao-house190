@@ -1,0 +1,29 @@
+{
+  "summary": "Frontend-only testing of AUTO-FIT thermal label rendering across 3 sizes x 2 products (6 combos), plus VALIDADE/ALÉRGICOS styling and print/batch flows. 4/6 auto-fit combos pass; 2 combos CLIP the content (auto-fit iteration oscillates and does not converge). VALIDADE, ALÉRGICOS, print-current, and print-batch (2+3=5 pages) all pass.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "ThermalLabel (auto-fit)", "issue": "80x50 with 'Molho de Tomate Artesanal' clips: content rendered height 208.6px > outer 189.0px (over by ~19.6px, fill_h=1.104). Applied transform scale=1.033 (>1) despite content already overflowing.", "selector": "[data-testid=\"label-preview\"] .thermal-label", "priority": "HIGH"},
+      {"component": "ThermalLabel (auto-fit)", "issue": "80x60 with 'Pão de Hambúrguer Brioche' clips: content rendered height 246.8px > outer 226.8px (over by ~20px, fill_h=1.088). Applied transform scale=1.066 (>1).", "selector": "[data-testid=\"label-preview\"] .thermal-label", "priority": "HIGH"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Fix the auto-fit iteration in /app/frontend/src/components/ThermalLabel.jsx so it converges when width↔wrapping↔height coupling oscillates. Suggested fixes: (a) After the iteration loop, do a final downscale check: measure scrollHeight AT the width `OW/s` actually applied, then only ACCEPT that s if `s * natH_final <= OH`; if not, keep reducing s in a small loop until the constraint holds. (b) Or clamp s to `min(s, OH/scrollHeight_at_current_width)` in a final settle pass. (c) Alternatively, treat s as monotonically non-increasing during iteration (never grow s once it has been reduced) — this guarantees no-clip. Currently the last iteration recomputes s from scrollHeight of the previous width, so the applied width and applied scale may be inconsistent, yielding scale > 1 even when content exceeds outer.",
+    "Re-test 80x50 Molho and 80x60 Brioche after fix; the other 4 combos are fine."
+  ],
+  "critical_code_review_comments": [
+    "ThermalLabel.jsx: iterative fixed-point does not guarantee `s * natH <= OH`. The final scale can be >1 while content still overflows because scrollHeight is remeasured under a different width than the one that will be applied post-scale. Add a monotonic-decrease invariant on s, or a final safety clamp.",
+    "The loop terminates after 6 iterations regardless of convergence; consider convergence check `|s_i - s_{i-1}| < eps` with a hard upper bound and a final downscale safety pass."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "4/6 auto-fit combos pass (66.7%); all VALIDADE/ALÉRGICOS/PRINT/BATCH assertions pass (100%)"},
+  "test_credentials": "N/A (no login)",
+  "seed_data_creation": "None (used existing seed products 'Molho de Tomate Artesanal' and 'Pão de Hambúrguer Brioche')",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Measured .thermal-label-outer and .thermal-label via getBoundingClientRect() on the preview [data-testid='label-preview']. The rect.height on .thermal-label already includes the transform:scale. Passing combos: Molho 80x40 (fill 1.001), Molho 80x60 (1.001), Brioche 80x40 (0.999), Brioche 80x50 (1.000). Failing (clip) combos: Molho 80x50 (fill 1.104, scale applied 1.033) and Brioche 80x60 (fill 1.088, scale applied 1.066). Validade computed styles: color rgb(0,0,0), bg rgb(255,255,255); spans have transparent bg + black text (visually identical to Produção box, which uses .tl-date-box with same borders). Alérgicos: rgb(0,0,0) text, transparent bg (inherits white from .thermal-label), border-top 2px. Print portal generates #print-root .label-page count=1 for print-current and count=5 for batch (2+3). window.print was overridden and flag set correctly.",
+  "rca of the issue": "The auto-fit in ThermalLabel.jsx uses a 6-iteration fixed-point that couples content width (`OW/s`) to natural height (scrollHeight) to scale (`s = OH/natH`). Because line-wrapping is discontinuous, when the width crosses a wrap threshold between iterations, scrollHeight jumps and s oscillates between values that don't correspond. The final block recomputes s from `scrollHeight` measured at the last-set width, then updates the width to `OW/s` and sets `transform: scale(s)` — but does NOT remeasure scrollHeight after the width change. If the new width triggers a re-wrap that increases the natural height, the applied scale (>1 in these cases) actually multiplies content that was already taller than outer, producing overflow. Reproduction: 80x50 Molho and 80x60 Brioche — the natural (unscaled) content height at width `OW/s` exceeds OH, yet scale s>1 is applied. Mitigation: add a final downscale safety pass — after applying width `OW/s`, measure scrollHeight again and set `s = min(s, OH/scrollHeight)`; iterate at most 2-3 more times until `s * scrollHeight <= OH + epsilon`. Alternatively, make s monotonically non-increasing across iterations."
+}

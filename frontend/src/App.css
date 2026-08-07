@@ -12,15 +12,23 @@
 
 /* ================= THERMAL LABEL ================= */
 /* Shared by on-screen preview AND print. Pure black on white. */
+.thermal-label-outer {
+  box-sizing: border-box;
+  background: #ffffff;
+  overflow: hidden;
+  position: relative;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
 .thermal-label {
   box-sizing: border-box;
+  width: 100%;
   background: #ffffff;
   color: #000000;
   padding: 1.8mm 2.6mm;
   display: flex;
   flex-direction: column;
-  gap: 1mm;
-  overflow: hidden;
+  gap: 1.1mm;
   font-family: 'Barlow', sans-serif;
   line-height: 1.05;
   -webkit-print-color-adjust: exact;
@@ -137,110 +145,12 @@
   line-height: 1.1;
 }
 
-/* ---- Compact variant for 80x40 (tight paper) ---- */
-.thermal-label--h40 {
-  padding: 1mm 2.2mm;
-  gap: 0.5mm;
-  line-height: 0.98;
-}
-.thermal-label--h40 .tl-top {
-  padding-bottom: 0.5mm;
-}
-.thermal-label--h40 .tl-brand {
-  font-size: 12px;
-}
-.thermal-label--h40 .tl-sub {
-  font-size: 6.5px;
-}
-.thermal-label--h40 .tl-peso {
-  font-size: 12px;
-}
-.thermal-label--h40 .tl-produto {
-  font-size: 14px;
-  line-height: 0.92;
-}
-.thermal-label--h40 .tl-dates {
-  gap: 1mm;
-}
-.thermal-label--h40 .tl-date-box {
-  padding: 0.3mm 1mm;
-}
-.thermal-label--h40 .tl-date-box .k {
-  font-size: 6.5px;
-}
-.thermal-label--h40 .tl-date-box .v {
-  font-size: 13px;
-}
-.thermal-label--h40 .tl-validade .v {
-  font-size: 13px;
-}
-.thermal-label--h40 .tl-details {
-  gap: 0.2mm;
-}
-.thermal-label--h40 .tl-row {
-  padding-bottom: 0.1mm;
-}
-.thermal-label--h40 .tl-row .k {
-  font-size: 8px;
-  min-width: 15mm;
-}
-.thermal-label--h40 .tl-row .v {
-  font-size: 11px;
-}
-.thermal-label--h40 .tl-alergicos {
-  padding: 0.6mm 1mm;
-  font-size: 8.5px;
-  line-height: 1;
-}
-
-/* ---- Roomier typography for 80x60 (preenche a altura do papel) ---- */
-.thermal-label--h60 {
-  gap: 1.8mm;
-  padding: 2.4mm 3mm;
-}
-.thermal-label--h60 .tl-top {
-  padding-bottom: 1.4mm;
-}
-.thermal-label--h60 .tl-brand {
-  font-size: 18px;
-}
-.thermal-label--h60 .tl-sub {
-  font-size: 9.5px;
-}
-.thermal-label--h60 .tl-peso {
-  font-size: 18px;
-}
-.thermal-label--h60 .tl-produto {
-  font-size: 27px;
-}
-.thermal-label--h60 .tl-date-box .k {
-  font-size: 10px;
-}
-.thermal-label--h60 .tl-date-box .v {
-  font-size: 21px;
-}
-.thermal-label--h60 .tl-validade .v {
-  font-size: 21px;
-}
-.thermal-label--h60 .tl-details {
-  gap: 1mm;
-}
-.thermal-label--h60 .tl-row {
-  padding-bottom: 0.8mm;
-}
-.thermal-label--h60 .tl-row .k {
-  font-size: 12px;
-}
-.thermal-label--h60 .tl-row .v {
-  font-size: 18px;
-}
-.thermal-label--h60 .tl-alergicos {
-  font-size: 14px;
-}
-
 /* ================= PRINT ================= */
+/* Rendered off-screen (not display:none) so the auto-fit can measure it */
 #print-root {
-  display: none;
+  position: fixed;
+  left: -10000px;
+  top: 0;
 }
 
 @media print {
@@ -253,7 +163,6 @@
     display: none !important;
   }
   #print-root {
-    display: block !important;
     position: absolute;
     left: 0;
     top: 0;
@@ -266,7 +175,7 @@
     page-break-after: auto;
     break-after: auto;
   }
-  .thermal-label {
+  .thermal-label-outer, .thermal-label {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
