@@ -1,0 +1,46 @@
+{
+  "summary": "Frontend-only verification of ThermalLabel CSS fixes. VALIDADE styling, font sizes and print CSS are all fixed correctly. However, the 80x60 (and now also 80x50) label sizes OVER-CORRECT: with the Pão de Hambúrguer Brioche product (which includes allergens), content overflows the physical label area and the last details rows (RESPONSÁVEL) plus the Alérgicos banner are clipped from the preview.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "ThermalLabel (.thermal-label--h60)",
+        "issue": "Content overflows label height. With product 'Pão de Hambúrguer Brioche' (has allergens), scrollHeight=305 > clientHeight=227 (clipped by ~78px). Last row RESPONSÁVEL bottom is 34px BELOW the label bottom and Alérgicos banner is fully clipped. The fix to enlarge h60 fonts (produto 27px, rows 18px, dates 21px, alérgicos 14px, padding 2.4mm/3mm) was too aggressive.",
+        "selector": ".thermal-label--h60",
+        "priority": "HIGH"
+      },
+      {
+        "component": "ThermalLabel (.thermal-label--h50 / base)",
+        "issue": "80x50 also clips with allergens product: scrollHeight=211 > clientHeight=189 (~22px overflow). Row .v at 15px combined with alergicos banner exceeds 50mm.",
+        "selector": ".thermal-label (base)",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Preview 80x60",
+        "issues": ["User cannot see the last details row (RESPONSÁVEL) nor the Alérgicos banner in preview — this is exactly what would fail on print for a product with allergens."]
+      }
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Reduce font sizes / gaps in .thermal-label--h60 so the full content (top bar, produto, dates, 4 detail rows, alergicos) fits within 60mm height. Target: with the Pão de Hambúrguer Brioche seed product, ensure scrollHeight <= clientHeight+2 and (labelBottom - lastRowBottom) small but positive.",
+    "Re-tune the base label (used by 80x50): current .tl-row .v=15px + alergicos=12px overflows 50mm. Either reduce base font or reduce padding/gaps so alergicos-inclusive layout fits.",
+    "Consider using an auto-fit strategy (measure and scale) if the mm-based math is fragile across products with/without allergens."
+  ],
+  "critical_code_review_comments": [
+    "Universal rule '.thermal-label *{color:#000!important}' is fine for the label but strong; keep an eye on future icons/logos.",
+    "The label height is enforced by inline style height:${size.h}mm and overflow:hidden — this HIDES overflow instead of raising an error/scaling; a visual clipping check would be useful in UI to warn the user.",
+    "In App.css the '.thermal-label--h50' is the implicit base — no dedicated class. Since only h40/h60 exist, the base MUST fit 50mm. Any base tweak affects the actual 50mm rendering — call it out explicitly."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a", "frontend": "60%"},
+  "test_credentials": "n/a (no auth)",
+  "seed_data_creation": "None (used existing seed product 'Pão de Hambúrguer Brioche').",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Use HashRouter route '/#/'. Product select uses shadcn; open trigger then click role=option. Reproduce with product 'Pão de Hambúrguer Brioche' (allergens). Measurement snippet used: compare label.scrollHeight vs clientHeight, and (label.getBoundingClientRect().bottom - lastRow.getBoundingClientRect().bottom). Results: 80x40 OK (gap=30, no clip); 80x50 clipped by 22px; 80x60 clipped by 78px, last row 34px below label bottom.",
+  "rca of the issue": "The recent CSS enlargement of h60 fonts (and 15px v-rows at base) pushes total intrinsic content height above the fixed mm heights when a product also renders the .tl-alergicos block. Because .thermal-label uses overflow:hidden with a fixed mm height, the excess is clipped silently. Mitigation: reduce h60 font/padding a notch (e.g., produto 24px, rows 16px, alergicos 12px, gap 1.4mm) and/or reduce base .tl-row .v to 14px; alternatively wrap alergicos block conditionally sizing when present."
+}

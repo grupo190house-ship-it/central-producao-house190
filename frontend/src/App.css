@@ -16,13 +16,15 @@
   box-sizing: border-box;
   background: #ffffff;
   color: #000000;
-  padding: 1.6mm 2.6mm;
+  padding: 1.8mm 2.6mm;
   display: flex;
   flex-direction: column;
-  gap: 0.9mm;
+  gap: 1mm;
   overflow: hidden;
   font-family: 'Barlow', sans-serif;
-  line-height: 1.02;
+  line-height: 1.05;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 
 .thermal-label * {
@@ -68,18 +70,18 @@
 /* Dates row */
 .tl-dates {
   display: grid;
-  grid-template-columns: 1fr 1.15fr;
+  grid-template-columns: 1fr 1fr;
   gap: 1.6mm;
 }
 .tl-date-box {
   border: 2px solid #000;
-  padding: 0.5mm 1.2mm;
+  padding: 0.6mm 1.2mm;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 .tl-date-box .k {
-  font-size: 8px;
+  font-size: 8.5px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -88,14 +90,9 @@
   font-size: 16px;
   font-weight: 900;
 }
+/* VALIDADE agora igual à PRODUÇÃO (texto preto, sem fundo preto) */
 .tl-validade {
-  background: #000 !important;
-}
-.tl-validade * {
-  color: #ffffff !important;
-}
-.tl-validade .v {
-  font-size: 18px;
+  background: #ffffff !important;
 }
 
 /* Details block */
@@ -112,14 +109,14 @@
   padding-bottom: 0.25mm;
 }
 .tl-row .k {
-  font-size: 8.5px;
+  font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  min-width: 14mm;
+  letter-spacing: 0.03em;
+  min-width: 17mm;
 }
 .tl-row .v {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   flex: 1;
 }
@@ -129,18 +126,15 @@
   letter-spacing: 0.03em;
 }
 
-/* Allergens banner */
+/* Allergens banner (borda + texto preto, sem depender de fundo preto na impressão) */
 .tl-alergicos {
-  margin-top: auto;
-  background: #000 !important;
-  padding: 0.8mm 1.4mm;
-  font-size: 11px;
+  margin-top: 0.4mm;
+  border: 2px solid #000;
+  padding: 0.9mm 1.4mm;
+  font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
-  line-height: 1.05;
-}
-.tl-alergicos * {
-  color: #ffffff !important;
+  line-height: 1.1;
 }
 
 /* ---- Compact variant for 80x40 (tight paper) ---- */
@@ -178,7 +172,7 @@
   font-size: 13px;
 }
 .thermal-label--h40 .tl-validade .v {
-  font-size: 14px;
+  font-size: 13px;
 }
 .thermal-label--h40 .tl-details {
   gap: 0.2mm;
@@ -187,11 +181,11 @@
   padding-bottom: 0.1mm;
 }
 .thermal-label--h40 .tl-row .k {
-  font-size: 7px;
-  min-width: 13mm;
+  font-size: 8px;
+  min-width: 15mm;
 }
 .thermal-label--h40 .tl-row .v {
-  font-size: 10.5px;
+  font-size: 11px;
 }
 .thermal-label--h40 .tl-alergicos {
   padding: 0.6mm 1mm;
@@ -199,18 +193,49 @@
   line-height: 1;
 }
 
-/* ---- Slightly roomier for 80x60 ---- */
+/* ---- Roomier typography for 80x60 (preenche a altura do papel) ---- */
 .thermal-label--h60 {
-  gap: 1.4mm;
+  gap: 1.8mm;
+  padding: 2.4mm 3mm;
+}
+.thermal-label--h60 .tl-top {
+  padding-bottom: 1.4mm;
+}
+.thermal-label--h60 .tl-brand {
+  font-size: 18px;
+}
+.thermal-label--h60 .tl-sub {
+  font-size: 9.5px;
+}
+.thermal-label--h60 .tl-peso {
+  font-size: 18px;
 }
 .thermal-label--h60 .tl-produto {
-  font-size: 22px;
+  font-size: 27px;
+}
+.thermal-label--h60 .tl-date-box .k {
+  font-size: 10px;
+}
+.thermal-label--h60 .tl-date-box .v {
+  font-size: 21px;
+}
+.thermal-label--h60 .tl-validade .v {
+  font-size: 21px;
+}
+.thermal-label--h60 .tl-details {
+  gap: 1mm;
+}
+.thermal-label--h60 .tl-row {
+  padding-bottom: 0.8mm;
+}
+.thermal-label--h60 .tl-row .k {
+  font-size: 12px;
 }
 .thermal-label--h60 .tl-row .v {
-  font-size: 14px;
+  font-size: 18px;
 }
 .thermal-label--h60 .tl-alergicos {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 /* ================= PRINT ================= */
@@ -242,10 +267,12 @@
     break-after: auto;
   }
   .thermal-label {
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: unset;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     box-shadow: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   .no-print {
     display: none !important;
