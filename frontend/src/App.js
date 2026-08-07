@@ -1,5 +1,5 @@
 import "@/App.css";
-import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
+import { HashRouter, Routes, Route, NavLink } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import GeneratorPage from "@/pages/GeneratorPage";
 import HistoryPage from "@/pages/HistoryPage";
@@ -53,7 +53,7 @@ function Shell({ children }) {
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
+      <HashRouter>
         <Shell>
           <Routes>
             <Route path="/" element={<GeneratorPage />} />
@@ -61,7 +61,7 @@ function App() {
             <Route path="/cadastros" element={<ManagePage />} />
           </Routes>
         </Shell>
-      </BrowserRouter>
+      </HashRouter>
       <Toaster position="top-center" richColors />
     </div>
   );
