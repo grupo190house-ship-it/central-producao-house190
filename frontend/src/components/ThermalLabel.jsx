@@ -2,7 +2,7 @@
 export const ThermalLabel = ({ data, size, testId }) => {
   return (
     <div
-      className="thermal-label"
+      className={`thermal-label thermal-label--h${size.h}`}
       data-testid={testId}
       style={{ width: `${size.w}mm`, height: `${size.h}mm` }}
     >

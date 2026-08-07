@@ -1,0 +1,25 @@
+{
+  "summary": "Retest of 80x40 clipping bug on 'Pão de Hambúrguer Brioche' (with alérgicos). All three sizes now render without clipping. Print flow works.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "80x40": {"scrollH": 151, "clientH": 151, "overflow_px": 0, "last_row_inside": true, "alergicos_inside": true},
+    "80x50": {"scrollH": 190, "clientH": 189, "overflow_px": 1, "last_row_inside": true, "alergicos_inside": true},
+    "80x60": {"scrollH": 227, "clientH": 227, "overflow_px": 0, "last_row_inside": true, "alergicos_inside": true},
+    "print": {"label_page_count": 1, "window_print_called": true}
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "100%"},
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Bug HIGH da iteração 1 (80x40 clipping ~39px) foi resolvido pela classe compacta thermal-label--h40. Todos os 3 tamanhos com produto Brioche (que tem alérgicos) apresentam overflow <= 2px e RESPONSÁVEL/ALÉRGICOS dentro do quadro. Impressão dispara window.print e cria #print-root .label-page.",
+  "rca of the issue": "N/A - fix verified"
+}
