@@ -325,7 +325,7 @@ export default function GeneratorPage() {
             </div>
           </div>
           <p className="text-xs text-zinc-500 mt-4 text-center">
-            Renderização fiel ao papel. Preto pleno, fonte encorpada para térmica Elgin i9.
+            Renderização fiel ao papel. Preto pleno, traço reforçado para impressora térmica 80mm.
           </p>
         </div>
       </div>

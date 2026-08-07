@@ -31,6 +31,7 @@
   gap: 1.1mm;
   font-family: 'Barlow', sans-serif;
   line-height: 1.05;
+  -webkit-text-stroke: 0.3px #000;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
@@ -125,7 +126,7 @@
 }
 .tl-row .v {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 800;
   flex: 1;
 }
 .tl-row .v.mono {
@@ -176,12 +177,21 @@
     break-after: auto;
   }
   .thermal-label-outer, .thermal-label {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     box-shadow: none !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+  /* Traço mais grosso e preto pleno para térmica não sair "sem cor" */
+  .thermal-label {
+    -webkit-font-smoothing: none;
+    -webkit-text-stroke: 0.45px #000;
+  }
+  .thermal-label .v,
+  .thermal-label .tl-produto,
+  .thermal-label .tl-brand,
+  .thermal-label .tl-peso {
+    -webkit-text-stroke: 0.5px #000;
   }
   .no-print {
     display: none !important;
