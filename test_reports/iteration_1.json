@@ -1,0 +1,39 @@
+{
+  "summary": "Frontend-only testing of House190 label web app. All 11 flows executed end-to-end via Playwright against the public URL: page load, product autofill, live preview updates, lote/validade computation, size switching (80x40/50/60), print current (window.print overridden), add-to-queue, print batch (sum of qty), history population + clear, Cadastros CRUD (produtos/destinos/responsáveis), and localStorage persistence into the Gerar dropdowns. 10/11 tests passed. The size 80x40 preview clips content (RESPONSÁVEL row and ALÉRGICOS strip render OUTSIDE the label frame).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "ThermalLabel / GeneratorPage preview (size 80x40)",
+        "issue": "At size 80x40mm the label content is taller than the paper: scrollHeight ~190px vs clientHeight ~151px. RESPONSÁVEL row overflows by ~12px and the ALÉRGICOS strip by ~33px (measured with product 'Pão de Hambúrguer Brioche'). Since .thermal-label has overflow:hidden implicitly by the paper-frame, these lines will be cut on the actual thermal print at 80x40. Violates spec requirement that no text be cut at any size.",
+        "selector": "[data-testid='label-preview'] .tl-row (RESPONSÁVEL), .tl-alergicos",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "GeneratorPage preview (80x40)",
+        "issues": ["Font sizes / paddings inside .thermal-label are tuned for 80x50 and are not responsive to 80x40. Consider reducing tl-produto/tl-details font-size or line-height when size.h==40, or dropping the tl-alergicos strip / making tl-row more compact for the shortest paper."]
+      }
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Fix 80x40 layout so RESPONSÁVEL and ALÉRGICOS fit inside the 40mm paper (scale down font-sizes/paddings for size.h===40, or a dedicated compact style)."
+  ],
+  "critical_code_review_comments": [
+    "GeneratorPage.jsx: `const products = useMemo(() => getProducts(), [])` (also destinos/responsaveis) is fine because navigating between routes remounts the page, but if the app ever adds in-page tabs instead of routes it would stop refreshing dropdowns after Cadastros edits. Consider reading from state or a small storage-event listener for robustness.",
+    "runPrint() writes to history even if the browser print dialog is cancelled — history will over-count. Consider recording history only after actual confirmation, or exposing a manual 'confirm print' step.",
+    "PrintPortal stays mounted (printLabels state never cleared), so subsequent prints stack DOM. Not currently harmful (state is overwritten) but should be reset after window.print returns to avoid stale nodes if user resizes and re-prints.",
+    "No sanitisation on Produto/Destino/Responsável names in Cadastros; long strings could break the etiqueta layout (already tight at 80x40)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (not tested per request)", "frontend": "91% (10/11 flows pass; 80x40 clipping fails spec)"},
+  "test_credentials": "N/A — app has no login",
+  "seed_data_creation": "None persisted; TEST_ prefixed items added to Cadastros were verified and the TEST_ product was deleted. TEST_Destino and TEST_Resp were not deleted (harmless; stored only in browser localStorage of the test run).",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Only the 80x40 clipping bug is open. Reproduction: open '/', select 'Pão de Hambúrguer Brioche' (has alergicos), change size-select to '80 × 40 mm', measure label-preview: RESPONSÁVEL row and .tl-alergicos are positioned below the paper's bottom edge. All other flows (autofill, live preview lote L+AAMMDD, validade = produção + dias, print-current qty count, batch sum of qty, history populate+clear, cadastros CRUD, localStorage persistence into Gerar dropdowns) verified passing.",
+  "rca of the issue": "In /app/frontend/src/App.css .thermal-label uses fixed paddings and font-sizes tuned for 80x50 (189px @ CSS-mm ≈ 50mm). The internal blocks tl-top, tl-produto, tl-dates, tl-details (4 rows) plus tl-alergicos sum to ~190px which fits 80x50 but overflows the 151px (40mm) frame. Fix by adding a size-aware variant, e.g. adding a modifier class like `thermal-label--h40` (set from ThermalLabel via size.key) and reducing tl-produto font-size, tl-row line-height, and tl-details gap for that variant."
+}
