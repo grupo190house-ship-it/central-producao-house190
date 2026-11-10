@@ -1,11 +1,12 @@
 export const SIZES = [
+  { key: "80x25", label: "80 × 25 mm", w: 80, h: 25, compact: true },
   { key: "80x40", label: "80 × 40 mm", w: 80, h: 40 },
   { key: "80x50", label: "80 × 50 mm", w: 80, h: 50 },
   { key: "80x60", label: "80 × 60 mm", w: 80, h: 60 },
 ];
 
 export function getSize(key) {
-  return SIZES.find((s) => s.key === key) || SIZES[1];
+  return SIZES.find((s) => s.key === key) || SIZES[0];
 }
 
 // yyyy-mm-dd -> Date (local, no tz shift)

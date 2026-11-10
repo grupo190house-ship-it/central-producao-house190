@@ -35,7 +35,7 @@ export default function GeneratorPage() {
   const destinos = useMemo(() => getDestinos(), []);
   const responsaveis = useMemo(() => getResponsaveis(), []);
 
-  const [sizeKey, setSizeKey] = useState("80x50");
+  const [sizeKey, setSizeKey] = useState(SIZES[0].key);
   const size = getSize(sizeKey);
 
   const [productId, setProductId] = useState(products[0]?.id || "");
@@ -189,17 +189,21 @@ export default function GeneratorPage() {
               <Input data-testid="produto-input" className="mt-1" value={produto} onChange={(e) => setProduto(e.target.value)} />
             </div>
 
-            <div>
-              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Peso</Label>
-              <Input data-testid="peso-input" className="mt-1" value={peso} onChange={(e) => setPeso(e.target.value)} />
-            </div>
-            <div>
-              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Validade (dias)</Label>
-              <Input data-testid="shelf-input" type="number" min="0" className="mt-1" value={shelfLifeDays} onChange={(e) => setShelfLifeDays(e.target.value)} />
-            </div>
+            {!size.compact && (
+              <>
+                <div>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Peso</Label>
+                  <Input data-testid="peso-input" className="mt-1" value={peso} onChange={(e) => setPeso(e.target.value)} />
+                </div>
+                <div>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Validade (dias)</Label>
+                  <Input data-testid="shelf-input" type="number" min="0" className="mt-1" value={shelfLifeDays} onChange={(e) => setShelfLifeDays(e.target.value)} />
+                </div>
+              </>
+            )}
 
             <div>
-              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Data de produção</Label>
+              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">{size.compact ? "Data de fabricação" : "Data de produção"}</Label>
               <Input data-testid="producao-input" type="date" className="mt-1" value={producaoDate} onChange={(e) => setProducaoDate(e.target.value)} />
             </div>
             <div>
@@ -208,7 +212,7 @@ export default function GeneratorPage() {
             </div>
 
             <div>
-              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Destino</Label>
+              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">{size.compact ? "Loja" : "Destino"}</Label>
               <Select value={destino} onValueChange={setDestino}>
                 <SelectTrigger data-testid="destino-select" className="mt-1 bg-white">
                   <SelectValue placeholder="Selecione" />
@@ -222,30 +226,34 @@ export default function GeneratorPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Responsável</Label>
-              <Select value={responsavel} onValueChange={setResponsavel}>
-                <SelectTrigger data-testid="responsavel-select" className="mt-1 bg-white">
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  {responsaveis.map((r) => (
-                    <SelectItem key={r.id} value={r.name}>
-                      {r.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {!size.compact && (
+              <>
+                <div>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Responsável</Label>
+                  <Select value={responsavel} onValueChange={setResponsavel}>
+                    <SelectTrigger data-testid="responsavel-select" className="mt-1 bg-white">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {responsaveis.map((r) => (
+                        <SelectItem key={r.id} value={r.name}>
+                          {r.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div>
-              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Conservação</Label>
-              <Input data-testid="conservacao-input" className="mt-1" value={conservacao} onChange={(e) => setConservacao(e.target.value)} />
-            </div>
-            <div>
-              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Alérgicos</Label>
-              <Input data-testid="alergicos-input" className="mt-1" value={alergicos} onChange={(e) => setAlergicos(e.target.value)} placeholder="opcional" />
-            </div>
+                <div>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Conservação</Label>
+                  <Input data-testid="conservacao-input" className="mt-1" value={conservacao} onChange={(e) => setConservacao(e.target.value)} />
+                </div>
+                <div>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Alérgicos</Label>
+                  <Input data-testid="alergicos-input" className="mt-1" value={alergicos} onChange={(e) => setAlergicos(e.target.value)} placeholder="opcional" />
+                </div>
+              </>
+            )}
           </div>
 
           <div className="flex flex-wrap gap-3 mt-5">
@@ -284,7 +292,7 @@ export default function GeneratorPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Produto</TableHead>
-                  <TableHead>Destino</TableHead>
+                  <TableHead>{size.compact ? "Loja" : "Destino"}</TableHead>
                   <TableHead className="text-center">Qtd</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
