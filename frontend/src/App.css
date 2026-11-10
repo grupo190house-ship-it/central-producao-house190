@@ -103,6 +103,10 @@
   flex-direction: column;
   justify-content: center;
 }
+.tl-compact-date {
+  align-self: center;
+  padding: 0.8mm 3mm;
+}
 .tl-date-box .k {
   font-size: 8.5px;
   font-weight: 800;

@@ -63,8 +63,10 @@ export const ThermalLabel = ({ data, size, testId }) => {
         {size.compact ? (
           <>
             <div className="tl-produto">{data.produto || "—"}</div>
-            <div>Fabricação: {data.producao || "—"}</div>
-            <div>{data.destino || "—"}</div>
+            <div className="tl-date-box tl-compact-date">
+              <span className="k">Data de produção</span>
+              <span className="v">{data.producao || "—"}</span>
+            </div>
           </>
         ) : (
           <>

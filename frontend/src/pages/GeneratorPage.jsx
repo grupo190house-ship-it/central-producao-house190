@@ -203,7 +203,7 @@ export default function GeneratorPage() {
             )}
 
             <div>
-              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">{size.compact ? "Data de fabricação" : "Data de produção"}</Label>
+              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Data de produção</Label>
               <Input data-testid="producao-input" type="date" className="mt-1" value={producaoDate} onChange={(e) => setProducaoDate(e.target.value)} />
             </div>
             <div>
@@ -211,23 +211,23 @@ export default function GeneratorPage() {
               <Input data-testid="qty-input" type="number" min="1" className="mt-1" value={qty} onChange={(e) => setQty(e.target.value)} />
             </div>
 
-            <div>
-              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">{size.compact ? "Loja" : "Destino"}</Label>
-              <Select value={destino} onValueChange={setDestino}>
-                <SelectTrigger data-testid="destino-select" className="mt-1 bg-white">
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  {destinos.map((d) => (
-                    <SelectItem key={d.id} value={d.name}>
-                      {d.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
             {!size.compact && (
               <>
+                <div>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Destino</Label>
+                  <Select value={destino} onValueChange={setDestino}>
+                    <SelectTrigger data-testid="destino-select" className="mt-1 bg-white">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {destinos.map((d) => (
+                        <SelectItem key={d.id} value={d.name}>
+                          {d.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div>
                   <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Responsável</Label>
                   <Select value={responsavel} onValueChange={setResponsavel}>
@@ -292,7 +292,7 @@ export default function GeneratorPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Produto</TableHead>
-                  <TableHead>{size.compact ? "Loja" : "Destino"}</TableHead>
+                  {!size.compact && <TableHead>Destino</TableHead>}
                   <TableHead className="text-center">Qtd</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
@@ -301,7 +301,7 @@ export default function GeneratorPage() {
                 {queue.map((it) => (
                   <TableRow key={it.qid}>
                     <TableCell className="font-medium">{it.produto}</TableCell>
-                    <TableCell className="text-zinc-600">{it.destino}</TableCell>
+                    {!size.compact && <TableCell className="text-zinc-600">{it.destino}</TableCell>}
                     <TableCell className="text-center">{it.qty}</TableCell>
                     <TableCell>
                       <button
