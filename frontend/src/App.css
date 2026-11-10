@@ -42,6 +42,8 @@
 
 .tl-compact {
   min-height: 100%;
+  padding-block: 1mm;
+  gap: 0.7mm;
   justify-content: center;
   text-align: center;
   font-size: 15px;
@@ -50,7 +52,7 @@
 }
 
 .tl-compact .tl-produto {
-  font-size: 23px;
+  font-size: 34px;
   line-height: 1.05;
 }
 
@@ -105,7 +107,8 @@
 }
 .tl-compact-date {
   align-self: center;
-  padding: 0.8mm 3mm;
+  min-width: 48mm;
+  padding: 1mm 3mm;
 }
 .tl-date-box .k {
   font-size: 8.5px;
@@ -116,6 +119,12 @@
 .tl-date-box .v {
   font-size: 16px;
   font-weight: 900;
+}
+.tl-compact-date .k {
+  font-size: 11px;
+}
+.tl-compact-date .v {
+  font-size: 23px;
 }
 /* VALIDADE agora igual à PRODUÇÃO (texto preto, sem fundo preto) */
 .tl-validade {

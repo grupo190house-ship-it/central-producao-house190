@@ -5,6 +5,7 @@ import { useRef, useLayoutEffect } from "react";
 export const ThermalLabel = ({ data, size, testId }) => {
   const outerRef = useRef(null);
   const contentRef = useRef(null);
+  const compactTitleRef = useRef(null);
   const contentKey = JSON.stringify(data);
 
   useLayoutEffect(() => {
@@ -20,6 +21,25 @@ export const ThermalLabel = ({ data, size, testId }) => {
     content.style.width = OW + "px";
 
     if (size.compact) {
+      const title = compactTitleRef.current;
+      title.style.removeProperty("font-size");
+
+      // Fit long names before shrinking the entire label, so the date stays legible.
+      if (content.scrollHeight > OH) {
+        let min = 12;
+        let max = parseInt(getComputedStyle(title).fontSize, 10);
+        while (min < max) {
+          const candidate = Math.ceil((min + max) / 2);
+          title.style.fontSize = `${candidate}px`;
+          if (content.scrollHeight > OH) {
+            max = candidate - 1;
+          } else {
+            min = candidate;
+          }
+        }
+        title.style.fontSize = `${min}px`;
+      }
+
       const scale = Math.min(1, OH / content.scrollHeight);
       content.style.transformOrigin = "top center";
       content.style.transform = `scale(${scale})`;
@@ -62,7 +82,7 @@ export const ThermalLabel = ({ data, size, testId }) => {
       <div ref={contentRef} className={size.compact ? "thermal-label tl-compact" : "thermal-label"}>
         {size.compact ? (
           <>
-            <div className="tl-produto">{data.produto || "—"}</div>
+            <div ref={compactTitleRef} className="tl-produto">{data.produto || "—"}</div>
             <div className="tl-date-box tl-compact-date">
               <span className="k">Data de produção</span>
               <span className="v">{data.producao || "—"}</span>
