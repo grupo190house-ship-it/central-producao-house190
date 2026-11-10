@@ -373,7 +373,7 @@ export default function GeneratorPage() {
                 </div>
                 <div>
                   <Label htmlFor="print-offset-y">Espaço acima · +{printAlignment.y} mm</Label>
-                  <input id="print-offset-y" data-testid="print-offset-y" type="range" min="0" max="2" step="0.5"
+                  <input id="print-offset-y" data-testid="print-offset-y" type="range" min="0" max="0.5" step="0.5"
                     className="mt-2 block w-full accent-black" value={printAlignment.y}
                     onChange={(event) => setPrintAlignment((current) => ({ ...current, y: Number(event.target.value) }))} />
                 </div>

@@ -1,37 +1,44 @@
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 
 // Eight drawing units per millimetre. The outer page remains exactly 80 × 25 mm.
 export const CompactLabel = ({ data, testId, alignment = { x: 0, y: 0 } }) => {
-  const titleRef = useRef(null);
-  const contentRef = useRef(null);
-  const produto = (data.produto || "—").toLocaleUpperCase("pt-BR");
-  const lines = useMemo(() => {
+  const produto = (data.produto?.trim() || "—").toLocaleUpperCase("pt-BR");
+  const title = useMemo(() => {
     const context = document.createElement("canvas").getContext("2d");
+    context.textAlign = "center";
     context.font = "900 72px Arial";
-    if (context.measureText(produto).width <= 852) return [produto];
+    let lines = [produto];
+    if (context.measureText(produto).width > 852) {
+      const middle = Math.ceil(produto.length / 2);
+      const space = produto.lastIndexOf(" ", middle);
+      const split = space > 0 ? space : middle;
+      lines = [produto.slice(0, split).trim(), produto.slice(split).trim()];
+    }
 
-    // Very long names use two lines to preserve a readable font size.
-    const middle = Math.ceil(produto.length / 2);
-    const space = produto.lastIndexOf(" ", middle);
-    const split = space > 0 ? space : middle;
-    return [produto.slice(0, split).trim(), produto.slice(split).trim()];
+    const fontSize = lines.length === 1 ? 144 : 72;
+    const lineHeight = fontSize * 1.05;
+    context.font = `900 ${fontSize}px Arial`;
+    let left = Infinity;
+    let right = -Infinity;
+    let top = Infinity;
+    let bottom = -Infinity;
+    lines.forEach((line, index) => {
+      const metrics = context.measureText(line);
+      left = Math.min(left, -metrics.actualBoundingBoxLeft);
+      right = Math.max(right, metrics.actualBoundingBoxRight);
+      top = Math.min(top, index * lineHeight - metrics.actualBoundingBoxAscent);
+      bottom = Math.max(bottom, index * lineHeight + metrics.actualBoundingBoxDescent);
+    });
+
+    // Fit the visible letters into the full title area without stretching them.
+    const scale = Math.min(568 / (right - left), 86 / (bottom - top));
+    return {
+      lines,
+      fontSize,
+      lineHeight,
+      transform: `translate(320, 47) scale(${scale}) translate(${-(left + right) / 2}, ${-(top + bottom) / 2})`,
+    };
   }, [produto]);
-
-  useLayoutEffect(() => {
-    const title = titleRef.current;
-    const content = contentRef.current;
-    const maxFontSize = lines.length === 1 ? 72 : 36;
-    title.setAttribute("font-size", String(maxFontSize));
-    const width = Math.max(...Array.from(title.children, (line) => line.getComputedTextLength()));
-    // Keep text within the central 72 mm, including accented glyphs.
-    title.setAttribute("font-size", String(maxFontSize * Math.min(1, 568 / width)));
-
-    const bounds = content.getBBox();
-    // Start 0.5 mm from the top, with room for the border at either edge.
-    const top = Math.min(4 + alignment.y * 8, 200 - bounds.height - 4);
-    const offsetY = Math.max(4, top) - bounds.y;
-    content.setAttribute("transform", `translate(${alignment.x * 8}, ${offsetY})`);
-  }, [lines, data.producao, alignment.x, alignment.y]);
 
   return (
     <svg
@@ -44,13 +51,13 @@ export const CompactLabel = ({ data, testId, alignment = { x: 0, y: 0 } }) => {
       role="img"
       aria-label={`${produto}. Data de produção ${data.producao || "—"}`}
     >
-      <g ref={contentRef} fill="#000" fontFamily="Arial, Helvetica, sans-serif" fontWeight="900" textAnchor="middle">
-        <text ref={titleRef} fontSize="72">
-          {lines.map((line, index) => <tspan key={index} x="320" y={74 - (lines.length - 1 - index) * 38}>{line}</tspan>)}
+      <g transform={`translate(${alignment.x * 8}, ${alignment.y * 8})`} fill="#000" fontFamily="Arial, Helvetica, sans-serif" fontWeight="900" textAnchor="middle">
+        <text fontSize={title.fontSize} transform={title.transform}>
+          {title.lines.map((line, index) => <tspan key={index} x="0" y={index * title.lineHeight}>{line}</tspan>)}
         </text>
-        <rect x="112" y="92" width="416" height="80" fill="none" stroke="#000" strokeWidth="3" />
-        <text x="320" y="120" fontSize="23" fontWeight="700">DATA DE PRODUÇÃO</text>
-        <text x="320" y="158" fontSize="50">{data.producao || "—"}</text>
+        <rect x="36" y="98" width="568" height="94" fill="none" stroke="#000" strokeWidth="3" />
+        <text x="320" y="121" fontSize="24" fontWeight="700">DATA DE PRODUÇÃO</text>
+        <text x="320" y="182" fontSize="76">{data.producao || "—"}</text>
       </g>
     </svg>
   );
