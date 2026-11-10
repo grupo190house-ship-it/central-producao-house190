@@ -372,13 +372,13 @@ export default function GeneratorPage() {
                     onChange={(event) => setPrintAlignment((current) => ({ ...current, x: Number(event.target.value) }))} />
                 </div>
                 <div>
-                  <Label htmlFor="print-offset-y">Cima / baixo · {printAlignment.y} mm</Label>
-                  <input id="print-offset-y" data-testid="print-offset-y" type="range" min="-2" max="2" step="0.5"
+                  <Label htmlFor="print-offset-y">Espaço acima · +{printAlignment.y} mm</Label>
+                  <input id="print-offset-y" data-testid="print-offset-y" type="range" min="0" max="2" step="0.5"
                     className="mt-2 block w-full accent-black" value={printAlignment.y}
                     onChange={(event) => setPrintAlignment((current) => ({ ...current, y: Number(event.target.value) }))} />
                 </div>
                 <Button variant="outline" data-testid="reset-print-alignment" onClick={() => setPrintAlignment({ x: 0, y: 0 })}>
-                  Centralizar novamente
+                  Restaurar posição
                 </Button>
               </div>
             </details>

@@ -27,8 +27,10 @@ export const CompactLabel = ({ data, testId, alignment = { x: 0, y: 0 } }) => {
     title.setAttribute("font-size", String(maxFontSize * Math.min(1, 568 / width)));
 
     const bounds = content.getBBox();
-    const offsetY = 100 - (bounds.y + bounds.height / 2);
-    content.setAttribute("transform", `translate(${alignment.x * 8}, ${offsetY + alignment.y * 8})`);
+    // Start 0.5 mm from the top, with room for the border at either edge.
+    const top = Math.min(4 + alignment.y * 8, 200 - bounds.height - 4);
+    const offsetY = Math.max(4, top) - bounds.y;
+    content.setAttribute("transform", `translate(${alignment.x * 8}, ${offsetY})`);
   }, [lines, data.producao, alignment.x, alignment.y]);
 
   return (

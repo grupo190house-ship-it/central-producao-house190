@@ -96,7 +96,7 @@ export function getPrintAlignment() {
   const saved = read(KEYS.printAlignment, null);
   return {
     x: Math.max(-3, Math.min(3, Number(saved?.x) || 0)),
-    y: Math.max(-2, Math.min(2, Number(saved?.y) || 0)),
+    y: Math.max(0, Math.min(2, Number(saved?.y) || 0)),
   };
 }
 
