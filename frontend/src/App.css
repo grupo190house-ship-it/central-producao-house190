@@ -40,20 +40,16 @@
   color: #000000 !important;
 }
 
-.tl-compact {
-  min-height: 100%;
-  padding-block: 1mm;
-  gap: 0.7mm;
-  justify-content: center;
-  text-align: center;
-  font-size: 15px;
-  font-weight: 700;
-  overflow-wrap: anywhere;
-}
-
-.tl-compact .tl-produto {
-  font-size: 34px;
-  line-height: 1.05;
+/* Fixed drawing shared by the compact preview and printed page. */
+.compact-label {
+  display: block;
+  flex: none;
+  width: 80mm;
+  height: 25mm;
+  background: #fff;
+  overflow: hidden;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 
 /* Top identification bar */
@@ -105,11 +101,6 @@
   flex-direction: column;
   justify-content: center;
 }
-.tl-compact-date {
-  align-self: center;
-  min-width: 48mm;
-  padding: 1mm 3mm;
-}
 .tl-date-box .k {
   font-size: 8.5px;
   font-weight: 800;
@@ -119,12 +110,6 @@
 .tl-date-box .v {
   font-size: 16px;
   font-weight: 900;
-}
-.tl-compact-date .k {
-  font-size: 11px;
-}
-.tl-compact-date .v {
-  font-size: 23px;
 }
 /* VALIDADE agora igual à PRODUÇÃO (texto preto, sem fundo preto) */
 .tl-validade {
@@ -191,11 +176,11 @@
     display: none !important;
   }
   #print-root {
-    position: absolute;
-    left: 0;
-    top: 0;
+    position: static;
   }
   .label-page {
+    break-inside: avoid;
+    page-break-inside: avoid;
     page-break-after: always;
     break-after: page;
   }

@@ -5,6 +5,7 @@ const KEYS = {
   destinos: "h190_destinos",
   responsaveis: "h190_responsaveis",
   history: "h190_history",
+  printAlignment: "h190_print_alignment",
 };
 
 const DEFAULT_PRODUCTS = [
@@ -89,6 +90,18 @@ export function addHistory(records) {
 }
 export function clearHistory() {
   write(KEYS.history, []);
+}
+
+export function getPrintAlignment() {
+  const saved = read(KEYS.printAlignment, null);
+  return {
+    x: Math.max(-3, Math.min(3, Number(saved?.x) || 0)),
+    y: Math.max(-2, Math.min(2, Number(saved?.y) || 0)),
+  };
+}
+
+export function savePrintAlignment(alignment) {
+  write(KEYS.printAlignment, alignment);
 }
 
 export function uid() {

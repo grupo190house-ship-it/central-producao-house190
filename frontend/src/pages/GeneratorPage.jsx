@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
+import { flushSync } from "react-dom";
 import {
   getProducts,
   getDestinos,
   getResponsaveis,
   addHistory,
   uid,
+  getPrintAlignment,
+  savePrintAlignment,
 } from "@/lib/storage";
 import { SIZES, getSize, todayISO, buildLabelData } from "@/lib/labelUtils";
 import { ThermalLabel } from "@/components/ThermalLabel";
+import { CompactLabel } from "@/components/CompactLabel";
 import { PrintPortal } from "@/components/PrintPortal";
 import {
   Select,
@@ -52,6 +56,11 @@ export default function GeneratorPage() {
 
   const [queue, setQueue] = useState([]);
   const [printLabels, setPrintLabels] = useState(null);
+  const [printAlignment, setPrintAlignment] = useState(getPrintAlignment);
+
+  useEffect(() => {
+    savePrintAlignment(printAlignment);
+  }, [printAlignment]);
 
   // Keep the @page size in sync with the selected paper for exact thermal output
   useEffect(() => {
@@ -101,13 +110,16 @@ export default function GeneratorPage() {
     return out;
   };
 
-  const runPrint = (items, label) => {
+  const runPrint = async (items, label) => {
     if (items.length === 0) {
       toast.error("Nada para imprimir.");
       return;
     }
     const labels = expand(items);
-    setPrintLabels(labels);
+    // Mount and measure every label before opening the native print dialog.
+    flushSync(() => setPrintLabels(labels));
+    await document.fonts.ready;
+    await new Promise((resolve) => requestAnimationFrame(resolve));
     // history
     addHistory(
       items.map((it) => {
@@ -127,10 +139,8 @@ export default function GeneratorPage() {
         };
       })
     );
-    setTimeout(() => {
-      window.print();
-      toast.success(`${labels.length} etiqueta(s) enviada(s) — ${label}`);
-    }, 120);
+    window.print();
+    toast.success(`Impressão aberta para ${labels.length} etiqueta(s) — ${label}`);
   };
 
   const addToQueue = () => {
@@ -329,16 +339,54 @@ export default function GeneratorPage() {
           </div>
           <div className="flex justify-center bg-zinc-100 rounded-md p-6">
             <div className="paper-frame">
-              <ThermalLabel data={previewData} size={size} testId="label-preview" />
+              {size.compact ? (
+                <CompactLabel data={previewData} alignment={printAlignment} testId="label-preview" />
+              ) : (
+                <ThermalLabel data={previewData} size={size} testId="label-preview" />
+              )}
             </div>
           </div>
           <p className="text-xs text-zinc-500 mt-4 text-center">
             Renderização fiel ao papel. Preto pleno, traço reforçado para impressora térmica 80mm.
           </p>
+          {size.compact && (
+            <details className="mt-4 border-t border-zinc-200 pt-4 text-sm text-zinc-700">
+              <summary className="cursor-pointer font-semibold">Ajustar impressão na Goldensky</summary>
+              <p className="mt-3">
+                Na janela de impressão, escolha papel personalizado de 80 × 25 mm, escala de 100%,
+                margens zero e desative cabeçalhos e rodapés.
+              </p>
+              <p className="mt-2">
+                Se o papel cortado continuar com 45 mm, confira o avanço de papel e o corte no driver
+                da impressora. O tamanho do arquivo é 25 mm. A guilhotina pode acrescentar papel.
+              </p>
+              <p className="mt-2">
+                Use os ajustes abaixo para corrigir pequenos deslocamentos. A posição é salva neste navegador
+                e aparece na prévia.
+              </p>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <Label htmlFor="print-offset-x">Esquerda / direita · {printAlignment.x} mm</Label>
+                  <input id="print-offset-x" data-testid="print-offset-x" type="range" min="-3" max="3" step="0.5"
+                    className="mt-2 block w-full accent-black" value={printAlignment.x}
+                    onChange={(event) => setPrintAlignment((current) => ({ ...current, x: Number(event.target.value) }))} />
+                </div>
+                <div>
+                  <Label htmlFor="print-offset-y">Cima / baixo · {printAlignment.y} mm</Label>
+                  <input id="print-offset-y" data-testid="print-offset-y" type="range" min="-2" max="2" step="0.5"
+                    className="mt-2 block w-full accent-black" value={printAlignment.y}
+                    onChange={(event) => setPrintAlignment((current) => ({ ...current, y: Number(event.target.value) }))} />
+                </div>
+                <Button variant="outline" data-testid="reset-print-alignment" onClick={() => setPrintAlignment({ x: 0, y: 0 })}>
+                  Centralizar novamente
+                </Button>
+              </div>
+            </details>
+          )}
         </div>
       </div>
 
-      {printLabels && <PrintPortal labels={printLabels} size={size} />}
+      {printLabels && <PrintPortal labels={printLabels} size={size} alignment={printAlignment} />}
     </div>
   );
 }
